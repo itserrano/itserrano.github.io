@@ -1,151 +1,113 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Website with Toggles</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resizable Popup Example</title>
     <style>
-        .toggle-button {
-            padding: 10px;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            cursor: pointer;
-            display: block; /* Make buttons block-level for mobile */
-            margin: 5px 0;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-
-        .popup-window {
-            position: absolute;
+        .toggle-button {
+            margin: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* Add a semi-transparent overlay */
-            display: flex; /* Use flexbox for centering */
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            cursor: move; /* Indicate that the popup is draggable */
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
         }
-
-        .popup-content {
+        .overlay.active {
+            display: block;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             background-color: white;
             border: 1px solid #ccc;
-            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            overflow: hidden;
+            width: 80%;
+            height: 80%;
             max-width: 800px;
-            width: 90%; /* Adjust width for smaller screens */
-            position: relative; /* For positioning the close button */
+            max-height: 600px;
+            resize: both;
+            overflow: auto;
         }
-
-        .close-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            text-align: center;
-            line-height: 20px;
-            cursor: pointer;
+        .popup.active {
+            display: block;
         }
-
-        .popup-resize-handle {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 10px;
-            height: 10px;
-            cursor: se-resize;
+        .popup iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
     </style>
 </head>
 <body>
-    <h1>Website with Toggles</h1>
-
-    <div id="toggle-buttons">
-        <button class="toggle-button" onclick="openWindow('https://itserrano.github.io/figures_done_1')">Price Timeseries</button>
-        <button class="toggle-button" onclick="openWindow('https://itserrano.github.io/figures_done_2')">Price Duration Curve</button>
-        <button class="toggle-button" onclick="openWindow('https://itserrano.github.io/figures_done_3')">NSE Duration Curve :)</button>
-    </div>
-
-    <div id="popup-window" class="popup-window" style="display: none;">
-        <div class="popup-content">
-            <button class="close-button" onclick="closeWindow()">X</button>
-            <iframe id="popup-content" width="100%" height="100%"></iframe>
-            <div class="popup-resize-handle"></div>
-        </div>
+    <button class="toggle-button" data-url="https://itserrano.github.io/figures_done_1">Pricing Timeseries</button>
+    <button class="toggle-button" data-url="https://itserrano.github.io/figures_done_2">Pricing Duration Curve</button>
+    <button class="toggle-button" data-url="https://itserrano.github.io/figures_done_3">Unserved Demand <br> Duration Curve</button>
+    <button class="toggle-button" data-url="https://itserrano.github.io/figures_done_4">Demand Response <br> Timeseries</button>
+    <button class="toggle-button" data-url="https://itserrano.github.io/figures_done_5">Demand Timeseries</button>
+    <button class="toggle-button" data-url="https://itserrano.github.io/figures_done_6">Demand Response <br> Provided Energy</button>
+    <button class="toggle-button" data-url="https://itserrano.github.io/figures_done_7">Temperature <br> Duration Curve</button>
+    <button class="toggle-button" data-url="https://itserrano.github.io/figures_done_8">Temperature Histogram</button>
+    <div class="overlay" id="overlay"></div>
+    <div class="popup" id="popup">
+        <iframe id="popup-frame" src=""></iframe>
     </div>
 
     <script>
-        var popup = document.getElementById('popup-window');
-        var popupContent = document.querySelector('.popup-content');
-        var resizeHandle = document.querySelector('.popup-resize-handle');
+        const toggleButtons = document.querySelectorAll('.toggle-button');
+        const popup = document.getElementById('popup');
+        const popupFrame = document.getElementById('popup-frame');
+        const overlay = document.getElementById('overlay');
 
-        var isDragging = false;
-        var initialX, initialY, initialWidth, initialHeight;
+        function openPopup(url) {
+            popupFrame.src = url;
+            popup.classList.add('active');
+            overlay.classList.add('active');
+        }
 
-        popup.addEventListener('mousedown', startDrag);
-        window.addEventListener('mousemove', drag);
-        window.addEventListener('mouseup', stopDrag);
+        function closePopup() {
+            popup.classList.remove('active');
+            overlay.classList.remove('active');
+            popupFrame.src = '';
+        }
 
-        resizeHandle.addEventListener('mousedown', startResize);
-        window.addEventListener('mousemove', resize);
-        window.addEventListener('mouseup', stopResize);
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const url = button.getAttribute('data-url');
+                openPopup(url);
+            });
         });
 
-        function startDrag(event) {
-            isDragging = true;
-            initialX = event.clientX;
-            initialY = event.clientY;
-        }
-
-        function drag(event) {
-            if (isDragging) {
-                var dx = event.clientX - initialX;
-                var dy = event.clientY - initialY;
-
-                popup.style.left = (popup.offsetLeft + dx) + 'px';
-                popup.style.top = (popup.offsetTop + dy) + 'px';
+        overlay.addEventListener('click', closePopup);
+        window.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closePopup();
             }
-        }
-
-        function stopDrag() {
-            isDragging = false;
-        }
-
-        function startResize(event) {
-            isDragging = true;
-            initialX = event.clientX;
-            initialY = event.clientY;
-            initialWidth = popupContent.offsetWidth;
-            initialHeight = popupContent.offsetHeight;
-        }
-
-        function resize(event) {
-            if (isDragging) {
-                var dx = event.clientX - initialX;
-                var dy = event.clientY - initialY;
-
-                popupContent.style.width = (initialWidth + dx) + 'px';
-                popupContent.style.height = (initialHeight + dy) + 'px';
-            }
-        }
-
-        function stopResize() {
-            isDragging = false;
-        }
-
-        function openWindow(url) {
-            popup.style.display = 'flex';
-            popupContent.style.width = '300px'; /* Initial width */
-            popupContent.style.height = '200px'; /* Initial height */
-            popupContent.querySelector('iframe').src = url;
-        }
-
-        function closeWindow() {
-            popup.style.display = 'none';
-        }
+        });
     </script>
 </body>
 </html>
-
