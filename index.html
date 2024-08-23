@@ -3,78 +3,104 @@
 <head>
     <title>Website with Toggles</title>
     <style>
-        .toggle-button {
-            padding: 10px;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            cursor: pointer;
-            display: block; /* Make buttons block-level for mobile */
-            margin: 5px 0;
-        }
+        /* ... other styles */
 
         .popup-window {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* Add a semi-transparent overlay */
-            display: flex; /* Use flexbox for centering */
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
+            /* ... other styles */
+            cursor: move; /* Indicate that the popup is draggable */
         }
 
-        .popup-content {
-            background-color: white;
-            border: 1px solid #ccc;
-            padding: 20px;
-            max-width: 800px;
-            width: 90%; /* Adjust width for smaller screens */
-            position: relative; /* For positioning the close button */
-        }
-
-        .close-button {
+        .popup-resize-handle {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            text-align: center;
-            line-height: 20px;
-            cursor: pointer;
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            cursor: se-resize;
         }
     </style>
 </head>
 <body>
-    <h1>Website with Toggles</h1>
 
     <div id="toggle-buttons">
-        <button class="toggle-button" onclick="openWindow('https://itserrano.github.io/figures_done_1')">Price Timeseries</button>
-        <button class="toggle-button" onclick="openWindow('https://itserrano.github.io/figures_done_2')">Price Duration Curve</button>
-        <button class="toggle-button" onclick="openWindow('https://itserrano.github.io/figures_done_3')">NSE Duration Curve</button>
-        </div>
-
+    <button class="toggle-button" onclick="openWindow('https://itserrano.github.io/figures_done_1')">Price Timeseries</button>
+    <button class="toggle-button" onclick="openWindow('https://itserrano.github.io/figures_done_2')">Price Duration Curve</button>
+    <button class="toggle-button" onclick="openWindow('https://itserrano.github.io/figures_done_3')">NSE Duration Curve</button>
+    </div>
     <div id="popup-window" class="popup-window" style="display: none;">
         <div class="popup-content">
             <button class="close-button" onclick="closeWindow()">X</button>
             <iframe id="popup-content" width="100%" height="100%"></iframe>
+            <div class="popup-resize-handle"></div>
         </div>
     </div>
 
     <script>
+        var popup = document.getElementById('popup-window');
+        var popupContent = document.querySelector('.popup-content');
+        var resizeHandle = document.querySelector('.popup-resize-handle');
+
+        var isDragging = false;
+        var initialX, initialY, initialWidth, initialHeight;
+
+        popup.addEventListener('mousedown', startDrag);
+        window.addEventListener('mousemove', drag);
+        window.addEventListener('mouseup', stopDrag);
+
+        resizeHandle.addEventListener('mousedown', startResize);
+        window.addEventListener('mousemove', resize);
+        window.addEventListener('mouseup', stopResize);
+
+        function startDrag(event) {
+            isDragging = true;
+            initialX = event.clientX;
+            initialY = event.clientY;
+        }
+
+        function drag(event) {
+            if (isDragging) {
+                var dx = event.clientX - initialX;
+                var dy = event.clientY - initialY;
+
+                popup.style.left = (popup.offsetLeft + dx) + 'px';
+                popup.style.top = (popup.offsetTop + dy) + 'px';
+            }
+        }
+
+        function stopDrag() {
+            isDragging = false;
+        }
+
+        function startResize(event) {
+            isDragging = true;
+            initialX = event.clientX;
+            initialY = event.clientY;
+            initialWidth = popupContent.offsetWidth;
+            initialHeight = popupContent.offsetHeight;
+        }
+
+        function resize(event) {
+            if (isDragging) {
+                var dx = event.clientX - initialX;
+                var dy = event.clientY - initialY;
+
+                popupContent.style.width = (initialWidth + dx) + 'px';
+                popupContent.style.height = (initialHeight + dy) + 'px';
+            }
+        }
+
+        function stopResize() {
+            isDragging = false;
+        }
+
         function openWindow(url) {
-            var popup = document.getElementById('popup-window');
-            var content = document.getElementById('popup-content');
             popup.style.display = 'flex';
-            content.src = url;
+            popupContent.style.width = '300px'; /* Initial width */
+            popupContent.style.height = '200px'; /* Initial height */
+            popupContent.querySelector('iframe').src = url;
         }
 
         function closeWindow() {
-            var popup = document.getElementById('popup-window');
             popup.style.display = 'none';
         }
     </script>
