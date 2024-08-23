@@ -1,1 +1,49 @@
-Hello World
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Website with Toggles</title>
+    <style>
+        .toggle-button {
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        .popup-window {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 600px;
+            background-color: white;   
+
+            border: 1px solid #ccc;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <h1>Website with Toggles</h1>
+
+    <div id="toggle-buttons">
+        <button class="toggle-button" onclick="openWindow('https://www.google.com')">Toggle 1</button>
+        <button class="toggle-button" onclick="openWindow('https://www.youtube.com')">Toggle 2</button>
+        </div>
+
+    <div id="popup-window" class="popup-window">
+        <iframe id="popup-content" width="100%" height="100%"></iframe>
+    </div>
+
+    <script>
+        function openWindow(url) {
+            var popup = document.getElementById('popup-window');
+            var content = document.getElementById('popup-content');
+            popup.style.display = 'block';
+            content.src = url;
+        }
+    </script>
+</body>
+</html>
