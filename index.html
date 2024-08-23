@@ -3,11 +3,50 @@
 <head>
     <title>Website with Toggles</title>
     <style>
-        /* ... other styles */
+        .toggle-button {
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            display: block; /* Make buttons block-level for mobile */
+            margin: 5px 0;
+        }
 
         .popup-window {
-            /* ... other styles */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Add a semi-transparent overlay */
+            display: flex; /* Use flexbox for centering */
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
             cursor: move; /* Indicate that the popup is draggable */
+        }
+
+        .popup-content {
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            max-width: 800px;
+            width: 90%; /* Adjust width for smaller screens */
+            position: relative; /* For positioning the close button */
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            cursor: pointer;
         }
 
         .popup-resize-handle {
@@ -21,12 +60,14 @@
     </style>
 </head>
 <body>
+    <h1>Website with Toggles</h1>
 
     <div id="toggle-buttons">
-    <button class="toggle-button" onclick="openWindow('https://itserrano.github.io/figures_done_1')">Price Timeseries</button>
-    <button class="toggle-button" onclick="openWindow('https://itserrano.github.io/figures_done_2')">Price Duration Curve</button>
-    <button class="toggle-button" onclick="openWindow('https://itserrano.github.io/figures_done_3')">NSE Duration Curve</button>
+        <button class="toggle-button" onclick="openWindow('https://itserrano.github.io/figures_done_1')">Price Timeseries</button>
+        <button class="toggle-button" onclick="openWindow('https://itserrano.github.io/figures_done_2')">Price Duration Curve</button>
+        <button class="toggle-button" onclick="openWindow('https://itserrano.github.io/figures_done_3')">NSE Duration Curve</button>
     </div>
+
     <div id="popup-window" class="popup-window" style="display: none;">
         <div class="popup-content">
             <button class="close-button" onclick="closeWindow()">X</button>
@@ -50,6 +91,12 @@
         resizeHandle.addEventListener('mousedown', startResize);
         window.addEventListener('mousemove', resize);
         window.addEventListener('mouseup', stopResize);
+
+        document.addEventListener('click', function (event) {
+            if (!popup.contains(event.target)) {
+                closeWindow();
+            }
+        });
 
         function startDrag(event) {
             isDragging = true;
@@ -106,3 +153,4 @@
     </script>
 </body>
 </html>
+
