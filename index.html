@@ -65,7 +65,7 @@
     <div id="toggle-buttons">
         <button class="toggle-button" onclick="openWindow('https://itserrano.github.io/figures_done_1')">Price Timeseries</button>
         <button class="toggle-button" onclick="openWindow('https://itserrano.github.io/figures_done_2')">Price Duration Curve</button>
-        <button class="toggle-button" onclick="openWindow('https://itserrano.github.io/figures_done_3')">NSE Duration Curve</button>
+        <button class="toggle-button" onclick="openWindow('https://itserrano.github.io/figures_done_3')">NSE Duration Curve :)</button>
     </div>
 
     <div id="popup-window" class="popup-window" style="display: none;">
@@ -91,11 +91,6 @@
         resizeHandle.addEventListener('mousedown', startResize);
         window.addEventListener('mousemove', resize);
         window.addEventListener('mouseup', stopResize);
-
-        document.addEventListener('click', function (event) {
-            if (!popup.contains(event.target)) {
-                closeWindow();
-            }
         });
 
         function startDrag(event) {
